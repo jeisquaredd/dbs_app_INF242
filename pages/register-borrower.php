@@ -1,3 +1,13 @@
+<?php
+
+require_once('../classes/database.php');
+
+$con = new database();
+
+$data = $con->opencon();
+
+?>
+
 <!doctype html>
 <html lang="en">
 <head>

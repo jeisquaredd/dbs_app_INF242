@@ -1,11 +1,91 @@
+<?php
+
+require_once('../classes/database.php');
+$con = new database();
+
+$allusers = $con->viewusers();
+
+$borrowerCreateStatus = null;
+$borrowerCreateMessage = '';
+
+if (isset($_POST['add_borrower'])) {
+  // In PHP: handle form submission to create borrower + user + mapping
+  // Steps:
+  // 1. Validate input (required fields, email format, etc.)
+        $firstname = $_POST['borrower_firstname'];
+        $lastname = $_POST['borrower_lastname'];
+        $email = $_POST['borrower_email'];
+        $phone = $_POST['borrower_phone_number'];
+        $member_since = $_POST['borrower_member_since'];
+        $is_active = $_POST['is_active'];
+        $temp_password = $_POST['temp_password'];
+
+  // 2. Hash the temporary password
+        $password_hash = password_hash($temp_password, PASSWORD_DEFAULT);
+
+        try {
+  // 3. Insert into Users table and get new user_id
+        $user_id = $con->insertUser($email, $password_hash, $is_active, $member_since);
+
+  // 4. Insert into Borrowers table and get new borrower_id
+        $borrower_id = $con->insertBorrower($firstname, $lastname, $email, $phone, $is_active, $member_since);
+
+  // 5. Insert into BorrowerUser mapping table
+        $con->insertBorrowerUser($borrower_id, $user_id);
+
+
+        $borrowerCreateStatus = 'success';
+        $borrowerCreateMessage = 'Borrower created successfully.';
+
+      } catch (Exception $e) {
+        $borrowerCreateStatus = 'error';
+        $borrowerCreateMessage = 'Error creating borrower: ' . $e->getMessage();
+      }
+    }
+
+    $borrowerAddressStatus = null;
+    $borrowerAddressMessage = '';
+
+    if(isset($_POST['add_address'])) {
+      // In PHP: handle form submission to add borrower address
+      // Steps:
+      // 1. Validate input (required fields, etc.)
+            $borrower_id = $_POST['borrower_id'];
+            $house_number = $_POST['ba_house_number'];
+            $street = $_POST['ba_street'];
+            $barangay = $_POST['ba_barangay'];
+            $city = $_POST['ba_city'];
+            $province = $_POST['ba_province'];
+            $postal_code = $_POST['ba_postal_code'];
+            $is_primary = $_POST['is_primary'];
+
+            try {
+      // 2. Insert into BorrowerAddress table
+            $con->insertBorrowerAddress($borrower_id, $house_number, $street, $barangay, $city, $province, $postal_code, $is_primary);
+
+            $borrowerAddressStatus = 'success';
+            $borrowerAddressMessage = 'Address added successfully.';
+
+          } catch (Exception $e) {
+            $borrowerAddressStatus = 'error';
+            $borrowerAddressMessage = 'Error adding address: ' . $e->getMessage();
+          }
+    }
+
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Borrowers — Admin</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"> -->
+  <link rel="stylesheet" href="../bs5/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
+  
+    <link rel="stylesheet" href="../sweetalert/dist/sweetalert2.css">
+  
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
@@ -100,7 +180,7 @@
             <p class="small-muted mb-3">Creates <b>Borrowers</b> + <b>Users</b> + <b>BorrowerUser</b>.</p>
 
             <!-- Later in PHP: action="../php/borrowers/register.php" method="POST" -->
-            <form action="#" method="POST">
+            <form action="" method="POST">
               <div class="row g-2">
                 <div class="col-12 col-md-6">
                   <label class="form-label">First Name</label>
@@ -139,7 +219,7 @@
                 </div>
               </div>
 
-              <button class="btn btn-primary w-100 mt-3" type="submit">Create Borrower Account</button>
+              <button name="add_borrower" class="btn btn-primary w-100 mt-3" type="submit">Create Borrower Account</button>
             </form>
           </div>
         </div>
@@ -149,16 +229,20 @@
             <h6 class="mb-2">Add Borrower Address</h6>
             <p class="small-muted mb-3">Creates <b>BorrowerAddress</b> row.</p>
             <!-- Later in PHP: action="../php/addresses/create.php" method="POST" -->
-            <form action="#" method="POST" class="row g-2">
+            <form action="" method="POST" class="row g-2">
               <div class="col-12">
                 <label class="form-label">Borrower</label>
                 <select class="form-select" name="borrower_id" required>
                   <option value="">Select borrower</option>
-                  <option value="1">Juan Dela Cruz</option>
-                  <option value="2">Maria Santos</option>
-                  <option value="3">Mark Reyes</option>
-                  <option value="4">Ana Bautista</option>
-                  <option value="6">Grace Mendoza</option>
+
+                  <?php
+                 foreach ($allusers as $borrower) {
+                    echo '<option value="' . $borrower['borrower_id'] . '">' . $borrower['borrower_firstname'] . ' ' . $borrower['borrower_lastname'] . '</option>';
+                  }
+
+                  ?>
+      
+                 
                 </select>
               </div>
               <div class="col-6">
@@ -193,7 +277,7 @@
                 </select>
               </div>
               <div class="col-12">
-                <button class="btn btn-outline-primary w-100" type="submit">Add Address</button>
+                <button name="add_address" class="btn btn-outline-primary w-100" type="submit">Add Address</button>
               </div>
             </form>
           </div>
@@ -232,6 +316,52 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+<script src="../bs5/js/bootstrap.bundle.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+<script src="../sweetalert/dist/sweetalert2.js"></script>
+<script>
+  const createStatus = <?php echo json_encode($borrowerCreateStatus); ?>;
+  const createMessage = <?php echo json_encode($borrowerCreateMessage); ?>;
+
+  if (createStatus === 'success') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: createMessage,
+      confirmButtonText: 'OK'
+    });
+  } else if (createStatus === 'error') {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: createMessage,
+      confirmButtonText: 'OK'
+    });
+  }
+</script>
+
+
+<script>
+  const createStatusAddress = <?php echo json_encode($borrowerAddressStatus); ?>;
+  const createMessageAddress = <?php echo json_encode($borrowerAddressMessage); ?>;
+
+  if (createStatusAddress === 'success') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: createMessageAddress,
+      confirmButtonText: 'OK'
+    });
+  } else if (createStatusAddress === 'error') {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: createMessageAddress,
+      confirmButtonText: 'OK'
+    });
+  }
+</script>
 </body>
 </html>
