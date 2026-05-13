@@ -17,7 +17,7 @@ $checkoutStatus = null;
 $checkoutMessage = '';
 
 $borrower_id = '';
-$processed_by_user_id = '1';
+$processed_by_user_id = '';
 $copy_ids_input = '';
 $due_date = '';
 $condition_out = 'GOOD';
@@ -61,6 +61,7 @@ if (isset($_POST['create_loan'])) {
       $checkoutStatus = 'success';
       $checkoutMessage = 'Loan created successfully. Loan ID: ' . $loan_id . '.';
       $copy_ids_input = '';
+      $processed_by_user_id = '';
     } catch (Exception $e) {
       $checkoutStatus = 'error';
       $checkoutMessage = 'Error creating loan: ' . $e->getMessage();

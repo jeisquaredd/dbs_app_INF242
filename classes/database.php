@@ -142,6 +142,18 @@ function createLoanWithItems($borrower_id, $processed_by_user_id, array $copy_id
 
         $placeholders = implode(',', array_fill(0, count($copy_ids), '?'));
 
+        $borrowerStmt = $con->prepare("SELECT 1 FROM Borrowers WHERE borrower_id = ?");
+        $borrowerStmt->execute([$borrower_id]);
+        if (!$borrowerStmt->fetchColumn()) {
+            throw new RuntimeException('Borrower not found.');
+        }
+
+        $processorStmt = $con->prepare("SELECT 1 FROM Users WHERE user_id = ?");
+        $processorStmt->execute([$processed_by_user_id]);
+        if (!$processorStmt->fetchColumn()) {
+            throw new RuntimeException('Processor user not found.');
+        }
+
         $availabilitySql = "
             SELECT bc.copy_id
             FROM BookCopy bc
