@@ -131,7 +131,9 @@ function viewloans()
 function createLoanWithItems($borrower_id, $processed_by_user_id, array $copy_ids, $due_date, $condition_out)
 {
     $con = $this->opencon();
-    $copy_ids = array_values(array_unique(array_map('intval', $copy_ids)));
+    $copy_ids = array_values(array_unique(array_filter(array_map('intval', $copy_ids), function ($id) {
+        return $id > 0;
+    })));
 
     if (empty($copy_ids)) {
         throw new InvalidArgumentException('At least one copy ID is required.');

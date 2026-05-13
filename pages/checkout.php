@@ -44,12 +44,10 @@ if (isset($_POST['create_loan'])) {
   }
 
   $copy_ids = preg_split('/\s*,\s*/', $copy_ids_input, -1, PREG_SPLIT_NO_EMPTY);
-  $copy_ids = array_values(array_unique(array_filter(array_map('intval', $copy_ids), function ($id) {
-    return $id > 0;
-  })));
+  $copy_ids = array_map('intval', $copy_ids);
 
   if (empty($copy_ids)) {
-    $errors[] = 'At least one valid copy ID is required.';
+    $errors[] = 'At least one copy ID is required.';
   }
 
   if (!empty($errors)) {
@@ -60,8 +58,11 @@ if (isset($_POST['create_loan'])) {
       $loan_id = $con->createLoanWithItems($borrower_id, $processed_by_user_id, $copy_ids, $due_date, $condition_out);
       $checkoutStatus = 'success';
       $checkoutMessage = 'Loan created successfully. Loan ID: ' . $loan_id . '.';
-      $copy_ids_input = '';
+      $borrower_id = '';
       $processed_by_user_id = '';
+      $copy_ids_input = '';
+      $due_date = '';
+      $condition_out = 'GOOD';
     } catch (Exception $e) {
       $checkoutStatus = 'error';
       $checkoutMessage = 'Error creating loan: ' . $e->getMessage();
@@ -114,7 +115,7 @@ if (isset($_POST['create_loan'])) {
     <div class="col-12 col-lg-7">
       <div class="card p-4">
         <h5 class="mb-1">Process Checkout</h5>
-        <p class="small-muted mb-4">Create a Loan + LoanItems. Processor is required.</p>
+        <p class="small-muted mb-4">Create a Loan + Loan Items. Processor is required.</p>
 
         <form action="" method="POST">
           <div class="row g-3">
