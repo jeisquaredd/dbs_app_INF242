@@ -128,6 +128,66 @@ function viewloans()
             ")->fetchAll();
         }
 
+function createLoanWithItems($borrower_id, $processed_by_user_id, array $copy_ids, $due_date, $condition_out)
+{
+    $con = $this->opencon();
+    $copy_ids = array_values(array_unique(array_map('intval', $copy_ids)));
+
+    if (empty($copy_ids)) {
+        throw new InvalidArgumentException('At least one copy ID is required.');
+    }
+
+    try {
+        $con->beginTransaction();
+
+        $placeholders = implode(',', array_fill(0, count($copy_ids), '?'));
+
+        $availabilitySql = "
+            SELECT bc.copy_id
+            FROM BookCopy bc
+            WHERE bc.copy_id IN ($placeholders)
+              AND UPPER(bc.status) = 'AVAILABLE'
+              AND NOT EXISTS (
+                SELECT 1
+                FROM LoanItem li
+                JOIN Loan l ON l.loan_id = li.loan_id
+                WHERE li.copy_id = bc.copy_id
+                  AND l.loan_status = 'OPEN'
+                  AND li.li_returned_at IS NULL
+              )
+        ";
+
+        $availabilityStmt = $con->prepare($availabilitySql);
+        $availabilityStmt->execute($copy_ids);
+        $availableIds = array_map('intval', $availabilityStmt->fetchAll(PDO::FETCH_COLUMN));
+
+        $missingIds = array_diff($copy_ids, $availableIds);
+        if (!empty($missingIds)) {
+            throw new RuntimeException('Copies not available or already on loan: ' . implode(', ', $missingIds));
+        }
+
+        $loanStmt = $con->prepare("INSERT INTO Loan (borrower_id, processed_by_user_id, loan_status, loan_date) VALUES (?, ?, 'OPEN', NOW())");
+        $loanStmt->execute([$borrower_id, $processed_by_user_id]);
+        $loan_id = $con->lastInsertId();
+
+        $loanItemStmt = $con->prepare("INSERT INTO LoanItem (loan_id, copy_id, li_duedate, condition_out) VALUES (?, ?, ?, ?)");
+        foreach ($copy_ids as $copy_id) {
+            $loanItemStmt->execute([$loan_id, $copy_id, $due_date, $condition_out]);
+        }
+
+        $updateStmt = $con->prepare("UPDATE BookCopy SET status = 'ON_LOAN' WHERE copy_id IN ($placeholders)");
+        $updateStmt->execute($copy_ids);
+
+        $con->commit();
+        return $loan_id;
+    } catch (Exception $e) {
+        if ($con->inTransaction()) {
+            $con->rollBack();
+        }
+        throw $e;
+    }
+}
+
 function insertAuthor($firstname, $lastname, $birth_year, $nationality){
     $con = $this->opencon();
 
