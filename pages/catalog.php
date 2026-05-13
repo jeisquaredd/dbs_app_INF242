@@ -8,22 +8,11 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="catalog.html">Library Catalog</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCatalog">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navCatalog" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto gap-lg-1">
-        <li class="nav-item"><a class="nav-link active" href="catalog.html">Catalog</a></li>
-        <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Admin</a></li>
-        <li class="nav-item"><a class="nav-link" href="borrower-dashboard.html">Borrower</a></li>
-      </ul>
-      <a class="btn btn-sm btn-outline-secondary" href="login.html">Login</a>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'catalog';
+$activePage = 'catalog.php';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="card p-4 mb-3">

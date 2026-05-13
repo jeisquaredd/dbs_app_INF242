@@ -1,3 +1,17 @@
+<?php
+
+
+require_once('../classes/database.php');
+$con = new database();
+$bookcount = $con->countBook(); //5
+$bookcopycount = $con->countAvailBook(); //7
+
+$allloans = $con->viewloans();
+
+
+
+
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,28 +22,11 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="admin-dashboard.html">Library Admin</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navAdmin" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto gap-lg-1">
-        <li class="nav-item"><a class="nav-link active" href="admin-dashboard.html">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="books.html">Books</a></li>
-        <li class="nav-item"><a class="nav-link" href="borrowers.html">Borrowers</a></li>
-        <li class="nav-item"><a class="nav-link" href="checkout.html">Checkout</a></li>
-        <li class="nav-item"><a class="nav-link" href="return.html">Return</a></li>
-        <li class="nav-item"><a class="nav-link" href="catalog.html">Catalog</a></li>
-      </ul>
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge badge-soft">Role: ADMIN</span>
-        <a class="btn btn-sm btn-outline-secondary" href="login.html">Logout</a>
-      </div>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'admin';
+$activePage = 'admin-dashboard.php';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="row g-3">
@@ -42,15 +39,18 @@
           <div class="col-6 col-md-3">
             <div class="border rounded p-3 bg-white">
               <div class="small-muted">Total Books</div>
-              <div class="fs-4 fw-semibold">5</div>
+        
+              <div class="fs-4 fw-semibold"><?php echo $bookcount; ?></div>
             </div>
           </div>
+
           <div class="col-6 col-md-3">
             <div class="border rounded p-3 bg-white">
-              <div class="small-muted">Total Copies</div>
-              <div class="fs-4 fw-semibold">11</div>
+              <div class="small-muted"> Copies Available</div>
+              <div class="fs-4 fw-semibold"><?php echo $bookcopycount; ?></div>
             </div>
           </div>
+
           <div class="col-6 col-md-3">
             <div class="border rounded p-3 bg-white">
               <div class="small-muted">Open Loans</div>
@@ -68,8 +68,8 @@
         <hr class="my-4">
 
         <h6 class="mb-2">Recent Loans (with Processor)</h6>
-        <div class="table-responsive">
-          <table class="table table-sm align-middle">
+        <div class="table-responsive text-align-center">
+          <table class="table table-sm align-middle ">
             <thead class="table-light">
               <tr>
                 <th>Loan ID</th>
@@ -80,27 +80,37 @@
               </tr>
             </thead>
             <tbody>
+
+              <?php foreach ($allloans as $loan) { 
+                
+                 if ($loan['loan_status'] == 'OPEN') {
+                  $class = 'text-bg-danger';
+                } else {
+                  $class = 'text-bg-success';
+                }
+                ?>
+               
               <tr>
-                <td>1004</td>
-                <td>Ana Bautista</td>
-                <td><span class="badge text-bg-warning">OPEN</span></td>
-                <td>2026-02-15</td>
-                <td>admin.library@samplemail.com</td>
+                <td><?php echo $loan['loan_id'] ?></td>
+                <td><?php echo $loan['Borrower'] ?></td>
+                <td><span class="badge <?php echo $class; ?>"><?php echo $loan['loan_status'] ?></span></td>
+                <td><?php echo $loan['loan_date'] ?></td>
+                <td><?php echo $loan['username'] ?></td>
+                
               </tr>
-              <tr>
-                <td>1003</td>
-                <td>Mark Reyes</td>
-                <td><span class="badge text-bg-warning">OPEN</span></td>
-                <td>2026-01-10</td>
-                <td>admin.library@samplemail.com</td>
-              </tr>
-              <tr>
+            <?php } ?>
+              
+              <!-- <tr>
                 <td>1002</td>
                 <td>Maria Santos</td>
                 <td><span class="badge text-bg-success">CLOSED</span></td>
                 <td>2025-12-12</td>
                 <td>admin.library@samplemail.com</td>
-              </tr>
+              </tr> -->
+             
+
+
+              
             </tbody>
           </table>
         </div>
@@ -112,10 +122,11 @@
       <div class="card p-4">
         <h6 class="mb-3">Admin Shortcuts</h6>
         <div class="d-grid gap-2">
-          <a class="btn btn-primary" href="checkout.html">Process Checkout</a>
-          <a class="btn btn-outline-primary" href="return.html">Process Return</a>
-          <a class="btn btn-outline-secondary" href="books.html">Manage Books</a>
-          <a class="btn btn-outline-secondary" href="borrowers.html">Manage Borrowers</a>
+          <a class="btn btn-primary" href="checkout.php">Process Checkout</a>
+          <a class="btn btn-outline-primary" href="return.php">Process Return</a>
+          <a class="btn btn-outline-secondary" href="books.php">Manage Books</a>
+          <a class="btn btn-outline-secondary" href="borrowers.php">Manage Borrowers</a>
+          <a class="btn btn-outline-secondary" href="authors-genres.php">Manage Authors & Genres</a>
         </div>
         <hr class="my-4">
         <div class="small-muted">

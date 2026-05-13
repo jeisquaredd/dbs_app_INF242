@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+<?php
+$navbarMode = 'login';
+include 'navbar.php';
+?>
   <div class="container app-shell d-flex align-items-center justify-content-center py-4 login-shell">
     <div class="row w-100 justify-content-center">
       <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
@@ -39,19 +43,19 @@
 
             <div class="d-grid gap-2">
               <button class="btn btn-primary btn-lg" type="submit">Sign In</button>
-              <a class="btn btn-outline-secondary" href="catalog.html">View Catalog (Guest)</a>
+              <a class="btn btn-outline-secondary" href="catalog.php">View Catalog (Guest)</a>
             </div>
 
             <div class="d-grid gap-2 mt-3">
-              <a class="btn btn-outline-primary" href="register-borrower.html">Register as Borrower</a>
+              <a class="btn btn-outline-primary" href="register-borrower.php">Register as Borrower</a>
             </div>
 
             <hr class="my-4">
             <div class="small-muted text-center">
               Demo navigation:
               <div class="mt-2 d-flex gap-2 flex-wrap justify-content-center">
-                <a class="btn btn-sm btn-outline-primary" href="admin-dashboard.html">Admin</a>
-                <a class="btn btn-sm btn-outline-primary" href="borrower-dashboard.html">Borrower</a>
+                <a class="btn btn-sm btn-outline-primary" href="admin-dashboard.php">Admin</a>
+                <a class="btn btn-sm btn-outline-primary" href="borrower-dashboard.php">Borrower</a>
               </div>
             </div>
           </form>

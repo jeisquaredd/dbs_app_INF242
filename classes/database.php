@@ -106,7 +106,7 @@ function viewbooks()
             SUM(BookCopy.status = 'Available') AS Available_Copies
             FROM
             Books
-            JOIN BookCopy ON Books.book_id = BookCopy.book_id
+            LEFT JOIN BookCopy ON Books.book_id = BookCopy.book_id
             GROUP BY 1")->fetchAll();
         }
 
@@ -149,7 +149,7 @@ function insertAuthor($firstname, $lastname, $birth_year, $nationality){
 function viewauthors()
         {
             $con = $this->opencon();
-            return $con->query("SELECT * FROM Authors ORDER BY author_lastname, author_firstname")->fetchAll();
+            return $con->query("SELECT * FROM Authors ORDER BY author_id")->fetchAll();
         }
 
 function insertGenre($genre_name){
@@ -210,6 +210,18 @@ function countBook(){
     return $con->query("SELECT COUNT(*) AS total_books FROM Books")->fetchColumn();
 }
 
+
+function countAuthors(){
+    $con = $this->opencon();
+    return $con->query("SELECT COUNT(*) AS total_authors FROM Authors")->fetchColumn();
+}
+function countGenres(){
+    $con = $this->opencon();
+    return $con->query("SELECT COUNT(*) AS total_genres FROM Genres")->fetchColumn();
+}
+
+
+
 function countAvailBook(){
     $con = $this->opencon();
     return $con->query("SELECT SUM(status = 'Available') as Total_Books from BookCopy")->fetchColumn();
@@ -224,6 +236,12 @@ function deletebooks($book_id){
         // First, delete all copies of the book
         $stmtCopies = $con->prepare("DELETE FROM BookCopy WHERE book_id = ?");
         $stmtCopies->execute([$book_id]);
+
+        $stmtBA = $con->prepare("DELETE FROM BookAuthors WHERE book_id = ?");
+        $stmtBA->execute([$book_id]);
+
+        $stmtGenre = $con->prepare("DELETE FROM BookGenre WHERE book_id = ?");
+        $stmtGenre->execute([$book_id]);
 
         // Then, delete the book itself
         $stmtBook = $con->prepare("DELETE FROM Books WHERE book_id = ?");

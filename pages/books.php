@@ -2,6 +2,7 @@
 
 
 require_once('../classes/database.php');
+session_start();
 $con = new database();
 
 
@@ -13,8 +14,11 @@ if(isset($_POST['update_books'])){
 
 if(isset($_POST['delete_books'])){
   $book_id = $_POST['book_id'];
+  $book_title = $_POST['book_title'];
   try {
     $con->deletebooks($book_id);
+    $_SESSION['success_message'] = $book_title . " is deleted successfully!";
+
     header('Location: books.php');
     exit();
   } catch (PDOException $e) {
@@ -37,7 +41,16 @@ $navbarMode = 'admin';
 $activePage = 'books.php';
 include 'navbar.php';
 
-if(isset($error_message)): ?>
+if(isset($_SESSION['success_message'])): ?>
+<div class="container py-3">
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+</div>
+<?php unset($_SESSION['success_message']); endif; ?>
+
+<?php if(isset($error_message)): ?>
 <div class="container py-3">
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <strong>Error!</strong> <?php echo $error_message; ?>
@@ -307,6 +320,7 @@ if(isset($error_message)): ?>
         <p class="text-danger small">This action cannot be undone.</p>
         <form action="#" method="POST">
           <input type="hidden" name="book_id" id="delete_book_id">
+          <input type="hidden" name="book_title" id="delete_book_titles">
           <div class="d-flex gap-2 justify-content-end">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-danger" name="delete_books">Delete Book</button>
@@ -345,6 +359,7 @@ if(isset($error_message)): ?>
   if (!btn) return;
 
   document.getElementById('delete_book_id').value = btn.getAttribute('data-book-id') || '';
+  document.getElementById('delete_book_titles').value = btn.getAttribute('data-book-title') || '';
 
   document.getElementById('delete_book_title').textContent = btn.getAttribute('data-book-title') || '';
   });

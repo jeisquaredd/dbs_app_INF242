@@ -8,15 +8,12 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="admin-dashboard.html">Library Admin</a>
-    <div class="ms-auto d-flex gap-2">
-      <a class="btn btn-sm btn-outline-secondary" href="admin-dashboard.html">Back</a>
-      <a class="btn btn-sm btn-outline-secondary" href="login.html">Logout</a>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'admin-minimal';
+$backHref = 'admin-dashboard.php';
+$backLabel = 'Back';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="row g-3">

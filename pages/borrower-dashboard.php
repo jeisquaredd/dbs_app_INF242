@@ -8,24 +8,11 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="borrower-dashboard.html">Library</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBorrower">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navBorrower" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto gap-lg-1">
-        <li class="nav-item"><a class="nav-link active" href="borrower-dashboard.html">My Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="catalog.html">Catalog</a></li>
-      </ul>
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge badge-soft">Role: BORROWER</span>
-        <a class="btn btn-sm btn-outline-secondary" href="login.html">Logout</a>
-      </div>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'borrower';
+$activePage = 'borrower-dashboard.php';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="row g-3">
@@ -73,7 +60,7 @@
         </div>
 
         <hr class="my-3">
-        <a class="btn btn-outline-primary" href="catalog.html">Browse Catalog</a>
+        <a class="btn btn-outline-primary" href="catalog.php">Browse Catalog</a>
       </div>
     </div>
   </div>

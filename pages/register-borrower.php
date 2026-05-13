@@ -18,14 +18,10 @@ $data = $con->opencon();
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="login.html">Library</a>
-    <div class="ms-auto">
-      <a class="btn btn-sm btn-outline-secondary" href="login.html">Back to Login</a>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'guest-minimal';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="row justify-content-center">

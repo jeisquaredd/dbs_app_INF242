@@ -88,27 +88,11 @@ if (isset($_POST['add_borrower'])) {
   
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="admin-dashboard.html">Library Admin</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBorrowersAdmin">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navBorrowersAdmin" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto gap-lg-1">
-        <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="books.html">Books</a></li>
-        <li class="nav-item"><a class="nav-link active" href="borrowers.html">Borrowers</a></li>
-        <li class="nav-item"><a class="nav-link" href="checkout.html">Checkout</a></li>
-        <li class="nav-item"><a class="nav-link" href="return.html">Return</a></li>
-      </ul>
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge badge-soft">Role: ADMIN</span>
-        <a class="btn btn-sm btn-outline-secondary" href="login.html">Logout</a>
-      </div>
-    </div>
-  </div>
-</nav>
+<?php
+$navbarMode = 'admin';
+$activePage = 'borrowers.php';
+include 'navbar.php';
+?>
 
 <main class="container py-4">
   <div class="row g-3">
@@ -358,7 +342,7 @@ if (isset($_POST['add_borrower'])) {
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: createMessageAddress,
+      text: createMessage,
       confirmButtonText: 'OK'
     });
   }
